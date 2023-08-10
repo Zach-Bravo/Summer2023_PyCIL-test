@@ -162,7 +162,7 @@ class ResNet(nn.Module):
                 )
             else:
                 self.conv1 = nn.Sequential(
-                    nn.Conv2d(3, self.inplanes, kernel_size=3, stride=1, padding=1, bias=False),
+                    nn.Conv2d(3, self.inplanes, kernel_size=7, stride=1, padding=1, bias=False),
                     nn.BatchNorm2d(self.inplanes),
                     nn.ReLU(inplace=True),
                     nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
