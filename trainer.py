@@ -2,11 +2,19 @@ import sys
 import logging
 import copy
 import torch
+import torch.nn as nn
+import torchvision
+import torchvision.models as models
 from utils import factory
 from utils.data_manager import DataManager
 from utils.toolkit import count_parameters
+from collections import OrderedDict
 import os
 import wandb 
+import pickle
+
+
+
 
 def train(args):
     seed_list = copy.deepcopy(args["seed"])
@@ -82,7 +90,23 @@ def _train(args):
         model.incremental_train(data_manager)
         cnn_accy, nme_accy = model.eval_task()
         model.after_task()
-
+        
+        new_state_dict = OrderedDict()
+        for key, value in model._network.state_dict().items():
+          if 'convnet.' in key:
+            new_key = key.replace('convnet.','')
+            if 'conv1.0' in new_key:
+              new_key = new_key.replace('conv1.0','conv1')
+            if 'conv1.1' in new_key:
+              new_key = new_key.replace('conv1.1','bn1')
+            new_state_dict[new_key] = value
+          else:
+            new_state_dict[key] = value
+        model50 = models.resnet50()
+        num_features = model._network.fc.in_features
+        model50.fc = nn.Linear(num_features, 10)
+        model50.load_state_dict(new_state_dict)
+        
         if nme_accy is not None:
             logging.info("CNN: {}".format(cnn_accy["grouped"]))
             logging.info("NME: {}".format(nme_accy["grouped"]))
