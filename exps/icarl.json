@@ -8,7 +8,7 @@
     "init_cls": 10,
     "increment": 10,
     "model_name": "icarl",
-    "convnet_type": "resnet32",
+    "convnet_type": "resnet50",
     "device": ["0"],
     "seed": [1993], 
     "wb-project": "REU-Summer2023"
